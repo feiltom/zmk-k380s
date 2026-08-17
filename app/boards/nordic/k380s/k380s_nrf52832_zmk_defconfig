@@ -1,0 +1,86 @@
+# SPDX-License-Identifier: MIT
+#
+# TEMPORARY DEBUG BUILD - not the production config.
+# Production config backed up at:
+# /private/tmp/claude-501/-Users-tfeillant-workdir-zmk-k380s/083f1bf0-50cd-45a1-92cd-824a23407e5e/scratchpad/k380s_defconfig.production.bak
+# Goal: free enough RAM to re-enable logging/RTT and see real boot logs,
+# since the keyboard isn't showing up over BLE and we have zero visibility
+# into why. Settings/battery/status-led/soft-off are disabled here purely to
+# make room - they are not suspected causes.
+
+# enable MPU
+CONFIG_ARM_MPU=n
+
+# clock - we don't have an external one
+CONFIG_CLOCK_CONTROL_NRF_K32SRC_RC=y
+CONFIG_CLOCK_CONTROL_NRF_K32SRC_XTAL=n
+
+# enable GPIO
+CONFIG_GPIO=y
+CONFIG_PINCTRL=y
+
+## we use these pins for the keyboard
+CONFIG_GPIO_AS_PINRESET=n
+# NFCT pins are freed via `&uicr { nfct-pins-as-gpios; };` in the board dts
+
+## we only have ble
+CONFIG_ZMK_USB=n
+CONFIG_ZMK_BLE=y
+
+CONFIG_ZMK_PM_SOFT_OFF=n
+CONFIG_ZMK_SLEEP=y
+CONFIG_ZMK_BATTERY_REPORTING=n
+CONFIG_ZMK_STATUS_LED=y
+# battery-level blink needs zmk_battery_state_of_charge(), which only exists
+# when ZMK_BATTERY_REPORTING is on (disabled here for RAM) - keep just the
+# advertising-blink/connected-flash indicators, which are actually useful
+# for seeing BLE state at a glance right now.
+CONFIG_ZMK_STATUS_LED_BATTERY_LEVEL=n
+
+# settings/NVS re-enabled: without it, BLE bonds can't persist, which is
+# very likely why macOS was having trouble keeping the pairing. Costs
+# ~1000 bytes (BT_RX_STACK_SIZE default jumps from 1200 to 2200 once
+# BT_SETTINGS is on) plus NVS working buffers.
+CONFIG_FLASH=y
+CONFIG_FLASH_PAGE_LAYOUT=y
+CONFIG_FLASH_MAP=y
+CONFIG_NVS=y
+CONFIG_SETTINGS=y
+CONFIG_SETTINGS_NVS=y
+CONFIG_USE_DT_CODE_PARTITION=y
+
+CONFIG_BT_MAX_CONN=1
+CONFIG_BT_MAX_PAIRED=1
+
+CONFIG_BT_BUF_ACL_TX_COUNT=2
+# Default is 10 HCI event RX buffers (~90 bytes each incl. net_buf overhead)
+# - way more than a 1-2 connection keyboard needs.
+CONFIG_BT_BUF_EVT_RX_COUNT=3
+# Default extra ACL RX buffers = BT_MAX_CONN (2 here); range minimum is 1.
+CONFIG_BT_BUF_ACL_RX_COUNT_EXTRA=1
+CONFIG_SIZE_OPTIMIZATIONS=y
+CONFIG_DEBUG_OPTIMIZATIONS=n
+
+# app/Kconfig.defaults sets SYSTEM_WORKQUEUE_STACK_SIZE=2048 for every ZMK
+# board (unconditionally, unless ZMK_DISPLAY). That's 1024 bytes more than
+# Zephyr's own kernel default (1024) - way more than this 32KB chip can
+# spare. Forcing it back down to the plain Zephyr default here.
+CONFIG_SYSTEM_WORKQUEUE_STACK_SIZE=1024
+
+# debug - the whole point of this build (ZMK_LOG_LEVEL defaults to 4/debug
+# once LOG is on and ZMK_LOGGING_MINIMAL isn't set)
+# NOTE: deferred mode's ring buffer was dropping messages right at the crash
+# (buffer too small to survive our RAM budget). LOG_MODE_IMMEDIATE isn't
+# supported with the software BLE link layer on this chip either. Using
+# LOG_MODE_MINIMAL instead: no thread, no ring buffer, synchronous printk -
+# nothing to drop, and much cheaper on RAM.
+CONFIG_LOG=y
+CONFIG_LOG_MODE_MINIMAL=y
+CONFIG_DEBUG=y
+CONFIG_ASSERT=y
+CONFIG_USE_SEGGER_RTT=y
+# LOG_MODE_MINIMAL routes everything through printk(), which needs an actual
+# console backend wired up to go anywhere - USE_SEGGER_RTT alone only brings
+# in the low-level RTT lib, not the console driver.
+CONFIG_CONSOLE=y
+CONFIG_RTT_CONSOLE=y

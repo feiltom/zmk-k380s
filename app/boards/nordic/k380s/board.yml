@@ -1,0 +1,7 @@
+board:
+  name: k380s
+  vendor: nordic
+  socs:
+    - name: nrf52832
+      variants:
+        - name: zmk

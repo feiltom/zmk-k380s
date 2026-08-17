@@ -1,0 +1,8 @@
+# TyK380v2 board configuration
+#
+# Copyright (c) 2024 The ZMK Contributors
+# SPDX-License-Identifier: MIT
+
+config BOARD_K380S
+    select SOC_NRF52832_QFAB
+    select ZMK_BOARD_COMPAT

@@ -1,0 +1,20 @@
+identifier: k380s
+name: TyK380v2 Keyboard
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+  - xtools
+ram: 32
+supported:
+  - ble
+  - adc
+  - ieee802154
+  - gpio
+  - i2c
+  - counter
+  - spi
+  - kscan
+  - watchdog
+  - pwm
