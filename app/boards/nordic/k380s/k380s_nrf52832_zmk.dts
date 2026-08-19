@@ -126,14 +126,20 @@
         led = <&led_white_1>;
     };
 
-    /* P0.30 (AIN6) senses a 2-cell NiMH pack directly - no physical divider,
-     * confirmed by feeding it 3.0V from a bench supply and reading back
-     * ~3000mV. output-ohms == full-ohms => 1:1, no attenuation. */
+    /* P0.30 (AIN6) senses a 2-cell NiMH pack directly - no physical divider.
+     * The driver's percentage curve is a fixed lithium-ion curve (100% at
+     * 4200mV, 0% at 3450mV, a 750mV window, not configurable in this ZMK
+     * version). full-ohms/output-ohms is scaled (~1.697x) as a least-squares
+     * fit against an ideal 0%@1900mV / 100%@2600mV line (700mV window,
+     * close to the fixed curve's native span) - the middle of the range
+     * (~2200-2400mV) tracks closely, with some flattening at the extremes
+     * (0% until ~2000mV, 100% from ~2500mV) since a single linear scale
+     * can't perfectly reproduce an arbitrary target range. */
     vbatt: vbatt {
         compatible = "zmk,battery-voltage-divider";
         io-channels = <&adc 6>;
         output-ohms = <100000>;
-        full-ohms = <100000>;
+        full-ohms = <169700>;
     };
 };
 

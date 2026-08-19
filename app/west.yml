@@ -4,6 +4,8 @@ manifest:
       url-base: https://github.com/zephyrproject-rtos
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
+    - name: feiltom
+      url-base: https://github.com/feiltom
   projects:
     - name: zephyr
       remote: zmkfirmware
@@ -42,6 +44,10 @@ manifest:
       revision: 6cb4c283e76209d59c45fbcb218800cd19e9339d
       path: modules/msgs/zmk-studio-messages
       remote: zmkfirmware
+    - name: zmk-feature-status-led-k380s
+      revision: main
+      path: modules/zmk-feature-status-led-k380s
+      remote: feiltom
   group-filter: [+optional]
   self:
     west-commands: scripts/west-commands.yml

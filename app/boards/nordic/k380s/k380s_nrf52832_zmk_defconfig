@@ -29,13 +29,14 @@ CONFIG_ZMK_BLE=y
 
 CONFIG_ZMK_PM_SOFT_OFF=n
 CONFIG_ZMK_SLEEP=y
-CONFIG_ZMK_BATTERY_REPORTING=n
+## battery: P0.30 (AIN6) senses a 2-cell NiMH pack directly (no divider)
+## NOTE: the voltage-divider driver's state-of-charge curve is a fixed
+## lithium-ion curve in this ZMK version (no NiMH chemistry curve support),
+## so the reported percentage will be inaccurate for this pack.
+CONFIG_ZMK_BATTERY_REPORTING=y
+CONFIG_ZMK_BATTERY_REPORT_INTERVAL=3600
+CONFIG_ZMK_BATTERY_REPORTING_FETCH_MODE_STATE_OF_CHARGE=y
 CONFIG_ZMK_STATUS_LED=y
-# battery-level blink needs zmk_battery_state_of_charge(), which only exists
-# when ZMK_BATTERY_REPORTING is on (disabled here for RAM) - keep just the
-# advertising-blink/connected-flash indicators, which are actually useful
-# for seeing BLE state at a glance right now.
-CONFIG_ZMK_STATUS_LED_BATTERY_LEVEL=n
 
 # settings/NVS re-enabled: without it, BLE bonds can't persist, which is
 # very likely why macOS was having trouble keeping the pairing. Costs
