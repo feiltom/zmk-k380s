@@ -65,3 +65,49 @@ directly to the four pads shown below (front side of the board):
 
 The battery pack powers the board during flashing - VCC only needs to be
 tied to the probe's VTref sense line, not driven; the nRF52832 has no USB.
+
+Flashing was done from a Raspberry Pi acting as the SWD probe, driving
+SWDIO/SWDCLK directly from its GPIO header via OpenOCD's `bcm2835gpio`
+bit-banged adapter - no dedicated J-Link/ST-Link hardware needed. GND/VCC
+still need to be wired between the Pi and the board as above.
+
+`openocd.cfg` used on the Pi (Raspberry Pi 3, BCM2837):
+
+```
+interface bcm2835gpio
+
+# Raspi1 peripheral_base address
+# bcm2835gpio_peripheral_base 0x20000000
+# Raspi2 and Raspi3 peripheral_base address
+bcm2835gpio_peripheral_base 0x3F000000
+
+# Raspi1 BCM2835: (700Mhz)
+# bcm2835gpio_speed_coeffs 113714 28
+# Raspi2 BCM2836 (900Mhz):
+# bcm2835gpio_speed_coeffs 146203 36
+# Raspi3 BCM2837 (1200Mhz):
+bcm2835gpio_speed_coeffs 194938 48
+
+# SWD GPIO set: swclk swdio
+bcm2835gpio_swd_nums 25 24
+
+transport select swd
+
+set CHIPNAME nrf52832
+source [find target/nrf52.cfg]
+
+# Uncomment & lower speed to address errors
+adapter_khz 1000
+
+init
+nrf52_recover
+program zmk.hex verify reset
+rtt setup 0x20000410 0x8000 "SEGGER RTT"
+rtt start
+rtt server start 9090 0
+```
+
+SWCLK is on the Pi's BCM GPIO 25, SWDIO on BCM GPIO 24. `nrf52_recover` mass-erases
+before flashing (needed since the chip ships APPROTECT-locked). The `rtt`
+lines set up a TCP bridge (port 9090) to the firmware's SEGGER RTT log
+buffer for live boot/debug output over the same SWD link.
