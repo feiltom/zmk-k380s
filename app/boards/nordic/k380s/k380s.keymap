@@ -4,6 +4,12 @@
  * SPDX-License-Identifier: MIT
  */
 
+/* WARNING: bindings below use US/QWERTY HID keycodes (&kp Q, &kp SEMI, ...)
+ * matched to physical key position, not to any printed legend. If your OS
+ * keyboard layout is set to AZERTY, typed characters will NOT match this
+ * keyboard's printed legends - set the OS layout to US/QWERTY, or remap the
+ * bindings below to match AZERTY key positions instead. */
+
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/bt.h>

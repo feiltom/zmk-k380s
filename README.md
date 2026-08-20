@@ -20,6 +20,12 @@ reverse-engineered via brute-force GPIO scanning and hardware testing (no
 schematic available), so treat unlisted pins/behaviors as unknown rather
 than confirmed-absent.
 
+> **⚠️ Keymap layout warning**: `k380s.keymap` uses US/QWERTY HID keycodes
+> matched to physical key position, not to any printed legend. If your OS
+> keyboard layout is set to AZERTY, typed characters will **not** match
+> this keyboard's printed legends - set the OS layout to US/QWERTY, or
+> remap the keymap bindings to match AZERTY key positions instead.
+
 ### GPIO map (P0.0 - P0.31, all 32 pins in use)
 
 | Pin(s)              | Function                          | Notes |
