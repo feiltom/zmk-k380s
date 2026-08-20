@@ -37,6 +37,8 @@ CONFIG_ZMK_BATTERY_REPORTING=y
 CONFIG_ZMK_BATTERY_REPORT_INTERVAL=3600
 CONFIG_ZMK_BATTERY_REPORTING_FETCH_MODE_STATE_OF_CHARGE=y
 CONFIG_ZMK_STATUS_LED=y
+## P0.31 gates power to the LED bank - see EXT_POWER node in the board dts
+CONFIG_ZMK_EXT_POWER=y
 
 # settings/NVS re-enabled: without it, BLE bonds can't persist, which is
 # very likely why macOS was having trouble keeping the pairing. Costs

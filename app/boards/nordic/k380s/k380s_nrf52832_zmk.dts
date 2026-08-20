@@ -126,6 +126,13 @@
         led = <&led_white_1>;
     };
 
+    /* P0.31 gates power to the LED bank (all led_* GPIOs stay dark without
+     * it) - discovered by hogging it high/low and watching the LEDs light. */
+    EXT_POWER {
+        compatible = "zmk,ext-power-generic";
+        control-gpios = <&gpio0 31 GPIO_ACTIVE_HIGH>;
+    };
+
     /* P0.30 (AIN6) senses a 2-cell NiMH pack directly - no physical divider.
      * The driver's percentage curve is a fixed lithium-ion curve (100% at
      * 4200mV, 0% at 3450mV, a 750mV window, not configurable in this ZMK
